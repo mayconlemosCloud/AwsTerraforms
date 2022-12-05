@@ -1,7 +1,10 @@
 name: Create Infra 
 
 on:
-  pull_request:
+  push:
+    branches:
+      - main
+      - develop
     paths:
       - 'main/**'
 
