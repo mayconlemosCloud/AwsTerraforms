@@ -19,7 +19,7 @@ jobs:
     name: 'terraform plan dev'
     runs-on: ubuntu-latest
     env: 
-      TF_WORKING_DIR: 'main'
+      TF_WORKING_DIR: 'main/infra'
 
     defaults:
       run:
@@ -45,10 +45,7 @@ jobs:
 
       - name: Terraform Validate
         id: validate
-        run: terraform validate -no-color
-
-      - name: cd infra s        
-        run: cd infra
+        run: terraform validate -no-color    
  
       - name: Terraform Plan
         id: plandev
