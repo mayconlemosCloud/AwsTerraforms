@@ -34,6 +34,7 @@ resource "aws_instance" "web" {
   tags = {
     Name= "${var.environment} : EC2 created by Maycon"
     Env= var.environment
-  }
+    Type= var.instance_type
+   }
 }
 
