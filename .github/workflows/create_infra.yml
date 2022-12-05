@@ -47,8 +47,8 @@ jobs:
         id: validate
         run: terraform validate -no-color
 
-      - name: ls        
-        run: ls 
+      - name: cd infra        
+        run: cd /infra
  
       - name: Terraform Plan
         id: plandev
