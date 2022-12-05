@@ -1,4 +1,4 @@
-name: Create terraform plan 
+name: Create Infra 
 
 on:
   pull_request:
@@ -41,9 +41,9 @@ jobs:
       - name: Terraform Validate
         id: validate
         run: terraform validate -no-color
-
-      - name: Terraform APPLY        
-        run: terraform apply auto-approve -var-file="config/dev/terraform.tfvars"
+ 
+      - name: Terraform Apply
+        run: terraform apply -auto-approve -var-file="config/dev/terraform.tfvars"
 
       - uses: actions/github-script@0.9.0
         if: github.event_name == 'pull_request'
