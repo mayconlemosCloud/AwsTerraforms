@@ -48,7 +48,7 @@ jobs:
         run: terraform validate -no-color
 
       - name: cd infra s        
-        run: cd /infra
+        run: cd infra
  
       - name: Terraform Plan
         id: plandev
