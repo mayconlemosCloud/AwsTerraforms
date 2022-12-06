@@ -3,9 +3,10 @@ name: Create Infra
 
 on:
   push:
-    branches: [ develop ]
+   branches: 
+       - main
     paths: 
-       - 'main/**'    
+       - 'main'    
   
 
 env:
