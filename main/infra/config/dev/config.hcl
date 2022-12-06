@@ -1,2 +1,2 @@
 key="infra/dev/terraform.tfstate"
-region="eu-central-1"
+region="sa-east-1
