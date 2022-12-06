@@ -1,3 +1,2 @@
 environment="dev"
-instance_type="t3.small"
-aws_profile   = "mayconlemos"
+instance_type="t2.micro"
