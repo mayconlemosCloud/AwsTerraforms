@@ -4,6 +4,11 @@ name: Create Infra
 on:
   push:
    branches: ["develop"]
+  workflow_dispatch:
+    inputs:   
+      tags:
+        value: false
+        default: false     
 jobs:
   provision-ec2:
     runs-on: ubuntu-latest
@@ -32,3 +37,39 @@ jobs:
           terraform validate
           terraform plan 
           terraform apply -auto-approve
+
+  Destroy-ec2:
+    name: Destroy
+    runs-on: ubuntu-latest
+    needs: build 
+    steps:
+      - uses: trstringer/manual-approval@v1
+        with:
+          secret: ${{ github.TOKEN }}
+          approvers: mayconlemosCloud
+      - name: Deploy to production
+        run: echo deploying
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '14'
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: '${{ secrets.AWS_ACCESS_KEY_ID }}'
+          aws-secret-access-key: '${{ secrets.AWS_SECRET_ACCESS_KEY }}'
+          aws-region: us-east-2
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_wrapper: false
+      - name: Terraform Apply
+        id:   apply
+        env:
+          TF_VAR_ec2_name:  "${{ github.event.inputs.ec2-name }}"
+        run: |
+          cd tf-example/
+          terraform init
+          terraform validate
+          terraform plan 
+          terraform destroy     
