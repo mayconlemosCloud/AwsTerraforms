@@ -41,7 +41,7 @@ jobs:
   Destroy-ec2:
     name: Destroy
     runs-on: ubuntu-latest
-    needs: build 
+    needs: provision-ec2 
     steps:
       - uses: trstringer/manual-approval@v1
         with:
