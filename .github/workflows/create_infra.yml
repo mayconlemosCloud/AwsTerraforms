@@ -4,11 +4,8 @@ name: Create Infra
 on:
   push:
    branches: ["develop"]
-  workflow_dispatch:
-    inputs:   
-      tags:
-        value: false
-        default: false     
+   paths: 
+    - main/infra/**   
 jobs:
   provision-ec2:
     runs-on: ubuntu-latest
@@ -16,54 +13,41 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
-          node-version: '14'
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: '${{ secrets.AWS_ACCESS_KEY_ID }}'
-          aws-secret-access-key: '${{ secrets.AWS_SECRET_ACCESS_KEY }}'
-          aws-region: us-east-2
+          node-version: '14'     
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_wrapper: false
-      - name: Terraform Apply
-        id:   apply
+      - name: Terraform Init
+        id: init
+        run: terraform init
         env:
-          TF_VAR_ec2_name:  "${{ github.event.inputs.ec2-name }}"
+          ARM_CLIENT_ID: ${{  secrets.AWS_ACCESS_KEY_ID}} # This doesn't have to be a secret. Client IDs are not sensitive.
+          ARM_CLIENT_SECRET: ${{ secrets.AWS_SECRET_ACCESS_KEY}}         
+        working-directory: ./main/infra/ # Use your environment folder
+        shell: bash   
+      - name: Terraform Plan
+        id: plan
         run: |
-          cd main/infra/
-          terraform init
-          terraform validate
-          terraform plan 
-          terraform apply -auto-approve
-
-  Destroy-ec2:
-    name: Destroy
-    runs-on: ubuntu-latest
-    needs: provision-ec2 
-    steps:     
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: '14'
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: '${{ secrets.AWS_ACCESS_KEY_ID }}'
-          aws-secret-access-key: '${{ secrets.AWS_SECRET_ACCESS_KEY }}'
-          aws-region: us-east-2
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_wrapper: false
-      - name: Terraform Apply
-        id:   apply
+          terraform plan -input=false -no-color -out tf.plan
         env:
-          TF_VAR_ec2_name:  "${{ github.event.inputs.ec2-name }}"
-        run: |
-          cd main/infra/
-          terraform init
-          terraform validate
-          terraform plan 
-          terraform destroy     
+          ARM_CLIENT_ID: ${{ secrets.AWS_ACCESS_KEY_ID }} 
+          ARM_CLIENT_SECRET: ${{ secrets.AWS_SECRET_ACCESS_KEY}}        
+        working-directory: ./main/infra/  # Use your environment folder
+        shell: bash
+      - name: Terraform Show
+        id: show
+        run: terraform show -no-color tf.plan 2>&1 > /tmp/plan.txt       
+        env:
+          ARM_CLIENT_ID: ${{ secrets.AWS_ACCESS_KEY_ID }} 
+          ARM_CLIENT_SECRET: ${{ secrets.AWS_SECRET_ACCESS_KEY}}        
+        working-directory: ./main/infra/  # Use your environment folder
+        shell: bash      
+      - name: Terraform Apply
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: terraform apply -input=false tf.plan
+        env:
+          ARM_CLIENT_ID: ${{ secrets.AWS_ACCESS_KEY_ID }} 
+          ARM_CLIENT_SECRET: ${{ secrets.AWS_SECRET_ACCESS_KEY}}        
+        working-directory: ./main/infra/  # Use your environment folder
+        shell: bash      
