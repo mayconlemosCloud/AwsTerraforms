@@ -42,13 +42,7 @@ jobs:
     name: Destroy
     runs-on: ubuntu-latest
     needs: provision-ec2 
-    steps:
-      - uses: mayconlemosCloud/manual-approval@v1
-        with:
-          secret: ${{ github.TOKEN }}
-          approvers: mayconlemosCloud
-      - name: Deploy to production
-        run: echo deploying
+    steps:     
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
