@@ -1,14 +1,7 @@
 name: Create Infra 
 
 
-on:
-  workflow_dispatch:
-    inputs:
-      ec2-name:
-        description: EC2 name
-        required: true
-        default: 'App Server'
-        type: string
+on: workflow_dispatch
 
 jobs:
   provision-ec2:
