@@ -13,7 +13,7 @@ resource "aws_instance" "EC2" {
   instance_type = var.instance_type
 
   tags = {
-    Name        = "EC2 created by Maycon"
+    Name        = "EC2 created by Maycon Modificado"
     Environment = var.environment
   }
 }
