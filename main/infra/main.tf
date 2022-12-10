@@ -8,17 +8,18 @@ terraform {
 }
 
 
-resource "aws_instance" "web" {
-  ami           = "ami-0886a3d2c8b721217"
-  instance_type = "t2.micro"
+resource "aws_instance" "EC2" {
+  ami           = var.aws_ami
+  instance_type = var.instance_type
 
   tags = {
-    Name = "EC2 created by Maycon"
+    Name        = "EC2 created by Maycon"
+    Environment = var.environment
   }
 }
 
 provider "aws" {
-  region = "sa-east-1"
+  region = var.aws_region
   default_tags {
     tags = {
       Project    = "Terraform setup"

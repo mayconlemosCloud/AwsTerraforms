@@ -10,6 +10,12 @@ variable "aws_profile" {
   default     = "default"
 }
 
+variable "aws_ami" {
+  type        = string
+  description = "The AWS ami to use to execute the commands"
+  default     = "ami-0886a3d2c8b721217"
+}
+
 variable "environment" {
   type        = string
   description = "The environment to deploy to"
